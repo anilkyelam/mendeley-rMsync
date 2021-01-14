@@ -1,0 +1,9 @@
+
+# mendeley credentials
+.mendeley_config
+
+# local rmapi exe
+rmapi
+
+*.zip
+trash/

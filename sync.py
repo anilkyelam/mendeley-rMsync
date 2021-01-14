@@ -35,6 +35,8 @@
 # affected as soon as the document is moved out of the remarkabe folder.
 # Not surprisingly, this is the next big TODO i.e., how to sync documents 
 # without losing mendeley annotations and notes.
+#
+
 
 from pathlib import Path
 from pprint import pprint
@@ -213,7 +215,7 @@ class RmApi:
     def download(self, rfolder, rfile, outpath):
         """Download a single file from remarkable <rfolder/rfile> path exported with annotations"""
         rpath="{}/{}".format(rfolder, rfile)
-        out = self._run("geta", rpath)
+        out = self._run("geta", "-a", rpath)
         localpath = "{}-annotations.pdf".format(rfile)      # the downloaded file format
         if not os.path.exists(localpath):
             raise Exception("File not downloaded from remarkable cloud: {}".format(rpath))
@@ -276,10 +278,17 @@ def main():
     # mendeley annotations are saved separately from the file itself so replacing the file 
     # shouldn't affect the mendeley notes/comments.
     for doc in m_and_r:
-        mdoc = mdocuments[mfiles[doc]]
+        mdoc = mdocuments[mfiles[doc]]      
         # download from remarkable with annotations
-        localpath = "{}.pdf".format(uuid.uuid4().hex)
-        rmapi.download(MENDELEY_FOLDER_IN_REMARKABLE, doc, localpath)
+        try:
+            localpath = "{}.pdf".format(uuid.uuid4().hex)
+            rmapi.download(MENDELEY_FOLDER_IN_REMARKABLE, doc, localpath)
+        except Exception as ex:
+            # Skip if the error is about not having any annotations at all
+            if "Failed to generate annotations" in str(ex):
+                print("Document skipped: {}. No annotations yet!".format(doc))
+                continue
+            raise
         # NOTE: remove *all* currently attached files in mendeley
         for file_ in mdoc.files.iter():
             file_.delete()
@@ -294,6 +303,7 @@ def main():
         mdoc = mdocuments[mfiles[doc]]
         path = None
         for file_ in mdoc.files.iter():
+            print(file_)
             path = file_.download(".")
             break
         if not path:
