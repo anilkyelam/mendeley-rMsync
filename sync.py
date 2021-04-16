@@ -303,7 +303,6 @@ def main():
         mdoc = mdocuments[mfiles[doc]]
         path = None
         for file_ in mdoc.files.iter():
-            print(file_)
             path = file_.download(".")
             break
         if not path:
@@ -319,18 +318,28 @@ def main():
     # For documents in remarkable that are not in mendeley: remove them from remarkable,
     # mendeley will be the source of truth. Any annotations made in remarkable that were 
     # NOT previously synced will be lost.
-    trash = "trash"
-    if not os.path.exists(trash):   os.makedirs(trash)
+    TRASHDIR = "trash"
+    if not os.path.exists(TRASHDIR):   os.makedirs(TRASHDIR)
     for doc in r_minus_m:
-        # download from remarkable with annotations and save it to trash, just in case
-        localpath = "{}.pdf".format(doc)
-        trashpath = "{}/{}".format(trash, localpath)
-        rmapi.download(MENDELEY_FOLDER_IN_REMARKABLE, doc, localpath)
-        shutil.move(localpath, trashpath)
+        # before removing, try and download from remarkable if there are 
+        # annotations and save it to trash, just in case
+        try:
+            localpath = "{}.pdf".format(doc)
+            trashpath = "{}/{}".format(TRASHDIR, localpath)
+            rmapi.download(MENDELEY_FOLDER_IN_REMARKABLE, doc, localpath)
+            shutil.move(localpath, trashpath)
+        except Exception as ex:
+            # Skip if the error is about not having any annotations at all
+            if "Failed to generate annotations" not in str(ex):
+                raise
         # delete it from remarkable
         rmapi.remove(MENDELEY_FOLDER_IN_REMARKABLE, doc)
         print("Document removed: {}".format(doc))
-        
+    
+    # Remove any stray zip files
+    for item in os.listdir("."):    
+        if item.endswith(".zip"):   os.remove(item)
+
     print("Sync complete! Refresh your mendeley and remarkable apps.")
 
 
