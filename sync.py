@@ -1,7 +1,8 @@
 #
 # Syncs a *top-level* folder on mendeley with a *top-level* folder 
 # in remarkable tablet.
-# 
+#
+# Author: Anil Yelam
 #
 # Prerequisites/Instructions:
 # 1. Python3
