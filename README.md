@@ -1,10 +1,10 @@
-# mendeley-rmsync
+# Remarkable Support for Mendeley
 This tool syncs PDFs from a folder in [Mendeley Reference Manager](https://www.mendeley.com/download-reference-manager/) with a folder in [Remarkable Cloud](https://my.remarkable.com) (which ultimately ends up in your tablet if it is connected). 
 
 ## What does it do, exactly?
 It takes files in a specified folder in Mendeley and makes sure that it matches with a folder in Remarkable. Both folder names are hard-coded right now, feel free to change them locally before running the script. And make sure the folders actually exist in both places!
 
-Note that Mendeley's folder provides the ground truth, so any files not in Mendeley will be removed from Remarkable. And naturally, any new files added to Mendeley will be sent to Remarkable. For existing files at both places, it syncs the file annotations from Remarkable to Mendeley.
+Note that Mendeley's folder provides the ground truth, so any files not in Mendeley will be removed from Remarkable. And naturally, any new files added to Mendeley will be sent to Remarkable. For existing files at both places, it syncs the latest copy (with annotations) from Remarkable to Mendeley.
 
 
 ## How to run
@@ -59,3 +59,4 @@ Okay it's not strictly one-time, you may need to refresh credentials once every 
     ```
     python3 sync.py
     ```
+    You may need to refresh your local Mendeley client to see the annotations from Remarkable.
